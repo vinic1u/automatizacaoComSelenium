@@ -7,11 +7,17 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 import java.io.File;
 import java.time.LocalDate;
+import java.util.Scanner;
 
 public class Program {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws Exception {
+        Scanner sc = new Scanner(System.in);
 
-        String caminhoDosDownloads = "C:\\Users\\Pedro\\Desktop\\edicoesCampoMourao";
+        System.out.println("Digite o caminho para os downloads: ");
+        String caminhoDosDownloads = sc.nextLine();
+
+        System.out.print("Digite um texto para ser buscado no PDF: ");
+        String textoParaBuscar = sc.nextLine();
 
         ScrapDownloader scrap = new ScrapDownloader(
                 caminhoDosDownloads,
@@ -22,26 +28,22 @@ public class Program {
 
         File pastaDosDownloads = new File(caminhoDosDownloads);
 
+        Dotenv variaveisDeAmbiente = Dotenv.load();
 
-        // Variaveis do Ambiente
-        Dotenv variaveis = Dotenv.load();
 
         for (File arquivo: pastaDosDownloads.listFiles()) {
-
             ManipularPdf pdfManipulavel = new ManipularPdf(arquivo.getAbsolutePath());
 
-            if(pdfManipulavel.textoEncontrado(variaveis.get("valorParaBuscar"))){
-
-
+            if(pdfManipulavel.textoEncontrado(textoParaBuscar)){
                 EnviarEmailService.enviarEmail(
-                        variaveis.get("emailDestinatario"),
+                        variaveisDeAmbiente.get("emailDestinatario"),
                         arquivo.getAbsolutePath(),
                         "Voce foi chamado, Finalmente!!!",
                         "Segue o anexo",
                         arquivo.getName());
             }
-            arquivo.delete();
         }
+
 
 
     }

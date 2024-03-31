@@ -4,6 +4,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class ManipularPdf {
@@ -17,10 +18,12 @@ public class ManipularPdf {
     public boolean textoEncontrado(String textoParaBuscar){
 
         boolean textoEncontrado=false;
-
         try {
             // Carrega o arquivo PDF
-            PDDocument document = PDDocument.load(new File(caminhoDoPdf));
+            File arquivo = new File(caminhoDoPdf);
+
+            PDDocument document = PDDocument.load(arquivo);
+            System.out.println("Arquivo LIDO!");
 
             // Cria um PDFTextStripper para extrair o texto
             PDFTextStripper stripper = new PDFTextStripper();
@@ -28,12 +31,17 @@ public class ManipularPdf {
             // Obtém o texto do documento
             String text = stripper.getText(document);
 
+
             textoEncontrado = text.toLowerCase().contains(textoParaBuscar.toLowerCase());
 
             document.close();
+            arquivo.deleteOnExit();
+
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Arquivo nao é um PDF");
         }
+
         return textoEncontrado;
     }
+
 }
